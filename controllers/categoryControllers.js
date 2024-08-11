@@ -1,17 +1,42 @@
-const express = require('express');
-const router = express.Router();
-const { Category } = require('../models/create_models');
+const { Category }  = require('../models/create_models');
 
-router.get('/search', async (req, res) => {
+exports.buscarCategorias = async (req, res) => {
     try {
-        const categories = await Category.findAll({ order: [['id', 'ASC']]});
-        res.json(categories);
+        const { limit = 12, page = 1, fields = 'name,slug', use_in_menu } = req.query;
+    
+        // Garantindo que o limite seja inteiro
+        var queryLimit = parseInt(limit, 10);
+
+        // Calculando o desvio para a página
+        const offset = queryLimit > 0  && page > 0 ? ((parseInt(page, 10)-1) * queryLimit) : undefined;
+        
+        // Convertendo os campos para uma lista
+        const attributes = fields.split(',');
+
+        // Colocando a condição de use_in_menu em um objeto
+        const where = {};
+        if (use_in_menu==true) {
+            where.use_in_menu = true;
+        };
+
+        // Realizando consulta
+        const categories = await Category.findAll({
+            where: where,
+            attributes: attributes,
+            limit: queryLimit === -1 ? undefined : queryLimit,
+            offset: offset,
+        });
+
+        // Dando retorno
+        res.status(200).json(categories);
+
     } catch (error) {
         console.log('Erro ao buscar categorias: ', error);
+        res.status(400).send('Dados de requisição incorretos')
     }
-});
+};
 
-router.post('/', async (req, res) => {
+exports.criarCategoria = async (req, res) => {
     try {
         const { name, slug, use_in_menu } = req.body;
         const category = await Category.create({ name, slug, use_in_menu });
@@ -19,9 +44,9 @@ router.post('/', async (req, res) => {
     } catch (error) {
         console.log('Erro ao criar categoria: ', error);
     }
-});
+};
 
-router.get('/:id', async (req, res) => {
+exports.buscarCategoria = async (req, res) => {
     try {
         const category = await Category.findByPk(req.params.id);
 
@@ -33,9 +58,9 @@ router.get('/:id', async (req, res) => {
     } catch (error) {
         console.log('Erro ao buscar categoria: ', error);
     }
-});
+};
 
-router.put('/:id', async (req, res) => {
+exports.atualizarCategoria = async (req, res) => {
     try {
         const category = await Category.findByPk(req.params.id);
 
@@ -50,13 +75,13 @@ router.put('/:id', async (req, res) => {
         if (use_in_menu) category.use_in_menu = use_in_menu;
 
         await category.save();
-        res.status(200).json(category);
+        res.status(204).json(category);
     } catch (error) {
         console.log('Erro ao atualizar categoria: ', error);
     }
-});
+};
 
-router.delete('/:id', async (req, res) => {
+exports.deletarCategoria = async (req, res) => {
     try {
         const category = await Category.findByPk(req.params.id);
 
@@ -65,10 +90,8 @@ router.delete('/:id', async (req, res) => {
         };
 
         category.destroy();
-        res.status(200).json(category);
+        res.status(204).json(category);
     } catch (error) {
         console.log('Erro ao deletar categoria: ', error);
     }
-});
-
-module.exports = router;
+};
