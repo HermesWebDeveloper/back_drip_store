@@ -1,7 +1,7 @@
 const { sequelize } = require('../config/database');
 const { Model, DataTypes } = require('sequelize');
 
-class Categories extends Model { }
+class Category extends Model { }
 class User extends Model { };
 
 User.init(
@@ -22,7 +22,7 @@ User.init(
     }
 );
 
-Categories.init(
+Category.init(
     {
         id: {
             type: DataTypes.INTEGER,
@@ -44,7 +44,7 @@ Categories.init(
     },
     {
         sequelize,
-        modelName: 'Categories',
+        modelName: 'Category',
     }
 );
 
@@ -57,4 +57,4 @@ Categories.init(
     }
 })();
 
-module.exports = { User, Categories };
+module.exports = { User, Category };
