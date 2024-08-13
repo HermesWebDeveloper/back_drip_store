@@ -75,7 +75,7 @@ exports.atualizarCategoria = async (req, res) => {
         if (use_in_menu) category.use_in_menu = use_in_menu;
 
         await category.save();
-        res.status(204).json(category);
+        res.status(204);
     } catch (error) {
         console.log('Erro ao atualizar categoria: ', error);
     }
@@ -90,7 +90,7 @@ exports.deletarCategoria = async (req, res) => {
         };
 
         category.destroy();
-        res.status(204).json(category);
+        res.status(204);
     } catch (error) {
         console.log('Erro ao deletar categoria: ', error);
     }

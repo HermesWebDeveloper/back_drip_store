@@ -6,6 +6,7 @@ class User extends Model { };
 class Product extends Model { };
 class ImagesProduct extends Model { };
 class OptionsProduct extends Model { };
+class Product_Category extends Model { };
 
 User.init(
     {
@@ -48,6 +49,7 @@ Category.init(
     {
         sequelize,
         modelName: 'Category',
+        tableName: 'Category'
     }
 );
 
@@ -89,7 +91,8 @@ Product.init(
     },
     {
         sequelize,
-        modelName: 'Product'
+        modelName: 'Product',
+        tableName: 'Product'
     }
 );
 
@@ -164,6 +167,51 @@ OptionsProduct.init(
     }
 );
 
+Product_Category.init(
+    {
+        product_id: {
+            type: DataTypes.INTEGER,
+            allowNull: false,
+            references: {
+                model: 'Product',
+                key: 'id'
+            },
+        },
+        category_id: {
+            type: DataTypes.INTEGER,
+            allowNull: false,
+            references: {
+                model: 'Category',
+                key: 'id',
+            }
+        }
+    },
+    {
+        sequelize,
+        modelName: 'Product_Category',
+        tableName: 'Product_Category'
+    }
+);
+
+Product.hasMany(ImagesProduct, { foreignKey: 'product_id' });
+ImagesProduct.belongsTo(Product, { foreignKey: 'product_id' });
+
+Product.hasMany(OptionsProduct, { foreignKey: 'product_id' });
+OptionsProduct.belongsTo(Product, { foreignKey: 'product_id' });
+
+// Relação entre Product e Category através de Product_Category
+Product.belongsToMany(Category, {
+    through: Product_Category,
+    foreignKey: 'product_id',
+    otherKey: 'category_id'
+});
+
+Category.belongsToMany(Product, {
+    through: Product_Category,
+    foreignKey: 'category_id',
+    otherKey: 'product_id'
+});
+
 (async () => {
     try {
         await sequelize.sync({ force: true });
@@ -173,4 +221,4 @@ OptionsProduct.init(
     }
 })();
 
-module.exports = { User, Category, Product, ImagesProduct, OptionsProduct };
+module.exports = { User, Category, Product, ImagesProduct, OptionsProduct, Product_Category };
