@@ -1,9 +1,11 @@
 const { Sequelize, DataTypes } = require('sequelize');
-const dbPassword = process.env.DB_PASSWORD;
+// const dbPassword = process.env.DB_PASSWORD;
 
-console.log(process.env.URI)
+// console.log(process.env.URI)
 
-const sequelize = new Sequelize(process.env.URI);
+const sequelize = new Sequelize(process.env.URI, {
+    logging: false
+});
 
 (async () => {
     try {

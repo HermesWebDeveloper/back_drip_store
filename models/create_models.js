@@ -49,7 +49,6 @@ Category.init(
     {
         sequelize,
         modelName: 'Category',
-        tableName: 'Category'
     }
 );
 
@@ -76,6 +75,10 @@ Product.init(
             type: DataTypes.BOOLEAN,
             defaultValue: false
         },
+        stock: {
+            type: DataTypes.INTEGER,
+            defaultValue: 0
+        },
         description: {
             type: DataTypes.STRING,
             defaultValue: ""
@@ -92,7 +95,6 @@ Product.init(
     {
         sequelize,
         modelName: 'Product',
-        tableName: 'Product'
     }
 );
 
@@ -145,7 +147,7 @@ OptionsProduct.init(
             allowNull: false
         },
         shape: {
-            type: DataTypes.ENUM('square', 'cicle'),
+            type: DataTypes.ENUM('square', 'circle'),
             defaultValue: 'square'
         },
         radius: {
@@ -203,7 +205,7 @@ OptionsProduct.belongsTo(Product, { foreignKey: 'product_id' });
 Product.belongsToMany(Category, {
     through: Product_Category,
     foreignKey: 'product_id',
-    otherKey: 'category_id'
+    otherKey: 'category_id',
 });
 
 Category.belongsToMany(Product, {

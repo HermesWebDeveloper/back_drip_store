@@ -38,7 +38,7 @@ router.get('/:id', async (req, res) => {
 });
 
 router.put('/:id', async (req, res) => {
-    try {
+    try {''
         const { firstname, surname, email, password } = req.body;
         const user = await User.findByPk(req.params.id);
 
