@@ -3,10 +3,12 @@ const { Product, ImagesProduct, Product_Category, Category, OptionsProduct } = r
 
 exports.listarProdutos = async (req, res) => {
     try {
+        const MAX_LIMIT = 1000;
+
         const { limit = 12, page = 1, fields, match, category_ids, price_range, options } = req.query;
 
         // Garantindo que o limit seja inteiro
-        const queryLimit = limit ? parseInt(limit, 10) : 12;
+        const queryLimit = limit > 0 ? parseInt(limit, 10) : MAX_LIMIT;
 
         // Calculando o desvio
         var offset = page > 0 ? (queryLimit * (parseInt(page, 10)-1)) : undefined;
@@ -49,7 +51,7 @@ exports.listarProdutos = async (req, res) => {
                 },
                 {
                     model: ImagesProduct,
-                    attributes: ['id', 'content'],
+                    attributes: ['id', 'path'],
                 },
                 {
                     model: OptionsProduct,
@@ -68,9 +70,9 @@ exports.listarProdutos = async (req, res) => {
             stock: product.stock,
             description: product.description,
             price: product.price,
-            category_ids: product.Categories.map(category => category.id),
-            images: product.ImagesProduct.map(image => ({ id: image.id, content: image.content })),
-            options: product.OptionsProduct.map(option => ({ id: option.id, title: option.title, shape: option.shape, radius: option.radius, type: option.type, values: option.values })),
+            category_ids: product.Categories?.map(category => category.id),
+            images: product.ImagesProduct?.map(image => ({ id: image.id, content: image.path })),
+            options: product.OptionsProduct?.map(option => ({ id: option.id, title: option.title, shape: option.shape, radius: option.radius, type: option.type, values: option.values })),
         }));
 
         res.status(200).json({
