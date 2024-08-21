@@ -108,7 +108,7 @@ ImagesProduct.init(
         product_id: {
             type: DataTypes.INTEGER,
             references: {
-                model: 'Product',
+                model: Product,
                 key: 'id'
             },
             allowNull: false
@@ -138,7 +138,7 @@ OptionsProduct.init(
         product_id: {
             type: DataTypes.INTEGER,
             references: {
-                model: 'Product',
+                model: Product,
                 key: 'id'
             }
         },

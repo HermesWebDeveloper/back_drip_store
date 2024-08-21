@@ -3,6 +3,8 @@ const { Product, ImagesProduct, Product_Category, Category, OptionsProduct } = r
 
 exports.listarProdutos = async (req, res) => {
     try {
+        const MAX_LIMIT = 1000;
+
         const { limit = 12, page = 1, fields, match, category_ids, price_range, options } = req.query;
 
         // Garantindo que o limit seja inteiro
@@ -49,14 +51,14 @@ exports.listarProdutos = async (req, res) => {
                 },
                 {
                     model: ImagesProduct,
-                    attributes: ['id', 'content'],
+                    attributes: ['id', 'path'],
                 },
                 {
                     model: OptionsProduct,
                     attributes: ['id', 'title', 'shape', 'radius', 'type', 'values']
                 }
             ],
-            limit: queryLimit,
+            limit: queryLimit < 0 ? Number.MAX_LIMIT : queryLimit,
             offset: offset
         });
 
@@ -68,9 +70,9 @@ exports.listarProdutos = async (req, res) => {
             stock: product.stock,
             description: product.description,
             price: product.price,
-            category_ids: product.Categories.map(category => category.id),
-            images: product.ImagesProduct.map(image => ({ id: image.id, content: image.content })),
-            options: product.OptionsProduct.map(option => ({ id: option.id, title: option.title, shape: option.shape, radius: option.radius, type: option.type, values: option.values })),
+            category_ids: product.Categories?.map(category => category.id),
+            images: product.ImagesProduct?.map(image => ({ id: image.id, path: image.path })),
+            options: product.OptionsProduct?.map(option => ({ id: option.id, title: option.title, shape: option.shape, radius: option.radius, type: option.type, values: option.values })),
         }));
 
         res.status(200).json({
@@ -110,6 +112,8 @@ exports.criarProduto = async (req, res) => {
             price, 
             price_with_discount 
         });
+
+        console.log('Produto criado: ' + newProduct.id)
 
         for (var i in images) {
             await ImagesProduct.create({ 
@@ -152,4 +156,8 @@ exports.criarProduto = async (req, res) => {
     } catch (error) {
         console.log('Erro ao criar produto: ', error);
     }
+}
+
+exports.atualizarProduto = async (req, res) => {
+    const { enabled, name, slug, stock, description, price, price_with_discount, category_ids, images, options } = req.query;
 }
